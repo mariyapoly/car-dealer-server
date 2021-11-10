@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 var cors = require('cors');
 const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 
@@ -20,6 +21,8 @@ async function run() {
 
         const database = client.db("onlineCarDealer");
         const productCollection = database.collection("products");
+        const userCollection = database.collection("users");
+        const orderCollection = database.collection("orders");
 
         // get products only ten
         app.get('/products', async (req, res) => {
@@ -32,6 +35,33 @@ async function run() {
             const cursor = productCollection.find({});
             const result = await cursor.toArray();
             res.send(result);
+        })
+        // get single product
+        app.get('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await productCollection.findOne(query);
+            res.send(result);
+        })
+        // stored user
+        app.post('/user', async (req, res) => {
+            const query = req.body;
+            const result = await userCollection.insertOne(query);
+            res.send(result)
+        })
+        // order saved 
+        app.post('/orders', async (req, res) => {
+            const query = req.body;
+            const result = await orderCollection.insertOne(query);
+            console.log(result);
+            res.send(result)
+        })
+        // get order match email
+        app.get('/orders', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email }
+            const result = await orderCollection.find(query).toArray();
+            res.send(result)
         })
 
     }
