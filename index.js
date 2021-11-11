@@ -37,6 +37,19 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         })
+        // delete  product 
+        app.delete('/allProducts/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await productCollection.deleteOne(query);
+            res.send(result);
+        })
+        // added a product
+        app.post('/addProduct', async (req, res) => {
+            const query = req.body;
+            const result = await productCollection.insertOne(query);
+            res.send(result);
+        })
         // get single product
         app.get('/product/:id', async (req, res) => {
             const id = req.params.id;
@@ -56,11 +69,38 @@ async function run() {
             const result = await orderCollection.insertOne(query);
             res.send(result)
         })
+        // get all orders
+        app.get('/allorders', async (req, res) => {
+            const cursor = orderCollection.find({})
+            const result = await cursor.toArray();
+            res.send(result)
+        })
         // get order match email
         app.get('/orders', async (req, res) => {
             const email = req.query.email;
             const query = { email: email }
             const result = await orderCollection.find(query).toArray();
+            res.send(result)
+        })
+
+        // delete order product
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await orderCollection.deleteOne(query);
+            res.send(result)
+        })
+        // update product status
+        app.put('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    status: 'shipped'
+                },
+            };
+            const result = await orderCollection.updateOne(filter, updateDoc, options);
             res.send(result)
         })
         // get customer reviews
@@ -73,8 +113,30 @@ async function run() {
         app.post('/review', async (req, res) => {
             const query = req.body;
             const result = await reviewCollection.insertOne(query);
+            res.send(result)
+        })
+        // make admin 
+        app.put('/makeAdmin', async (req, res) => {
+            const email = req.query.email;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    role: 'admin'
+                },
+            };
+            const result = await userCollection.updateOne(filter, updateDoc, options);
             console.log(result)
             res.send(result)
+
+        })
+        // get user admin role
+        app.get('/makeAdmin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const result = await userCollection.findOne(query);
+            res.send(result)
+
         })
 
     }
