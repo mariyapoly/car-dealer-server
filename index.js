@@ -24,6 +24,7 @@ async function run() {
         const userCollection = database.collection("users");
         const orderCollection = database.collection("orders");
         const reviewCollection = database.collection("customerReview");
+        const teamCollection = database.collection("Team");
 
         // get products only ten
         app.get('/products', async (req, res) => {
@@ -140,7 +141,12 @@ async function run() {
                 res.send(result);
             }
         })
-
+        // get team data
+        app.get('/team', async (req, res) => {
+            const cursor = teamCollection.find({});
+            const result = await cursor.toArray();
+            res.send(result)
+        })
 
     }
     finally {
