@@ -115,21 +115,8 @@ async function run() {
             const result = await reviewCollection.insertOne(query);
             res.send(result)
         })
-        // make admin 
-        app.put('/makeAdmin', async (req, res) => {
-            const email = req.query.email;
-            const filter = { email: email };
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: {
-                    role: 'admin'
-                },
-            };
-            const result = await userCollection.updateOne(filter, updateDoc, options);
-            console.log(result)
-            res.send(result)
 
-        })
+
         // get user admin role
         app.get('/makeAdmin/:email', async (req, res) => {
             const email = req.params.email;
@@ -138,6 +125,23 @@ async function run() {
             res.send(result)
 
         })
+
+
+        // set user role admin
+        app.put('/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            if (query) {
+                const updateDoc = {
+                    $set: {
+                        role: "admin"
+                    }
+                }
+                const result = await userCollection.updateOne(query, updateDoc);
+                res.send(result);
+            }
+        })
+
 
     }
     finally {
