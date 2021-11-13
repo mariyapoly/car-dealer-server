@@ -28,7 +28,7 @@ async function run() {
         // get products only ten
         app.get('/products', async (req, res) => {
             const cursor = productCollection.find({});
-            const result = await cursor.limit(8).toArray();
+            const result = await cursor.limit(6).toArray();
             res.send(result);
         })
         // get all products
@@ -123,7 +123,6 @@ async function run() {
             const query = { email: email };
             const result = await userCollection.findOne(query);
             res.send(result)
-
         })
 
 
